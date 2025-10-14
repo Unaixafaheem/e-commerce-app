@@ -1,42 +1,20 @@
 import React from "react";
-import { Box, Button, Image, Text, VStack } from "@chakra-ui/react";
 import { useCart } from "../context/CartContext";
 
-function ProductCard({ product }) {
-  const { addToCart } = useCart();
+const ProductCard = ({ product }) => {
+  const cart = useCart();
+  const addToCart = cart?.addToCart;
 
   return (
-    <Box
-      p={4}
-      borderWidth="1px"
-      borderRadius="lg"
-      boxShadow="md"
-      _hover={{ transform: "scale(1.05)", boxShadow: "xl" }}
-      transition="0.3s"
-    >
-      <Image
-        src={product.image}
-        alt={product.name}
-        mb={3}
-        borderRadius="md"
-        boxShadow="sm"
-      />
-      <VStack align="stretch" spacing={1}>
-        <Text fontWeight="bold" fontSize="lg">
-          {product.name}
-        </Text>
-        <Text color="gray.600">${product.price}</Text>
-        <Button
-          mt={2}
-          colorScheme="teal"
-          size="sm"
-          onClick={() => addToCart(product)}
-        >
-          Add to Cart
-        </Button>
-      </VStack>
-    </Box>
+    <div className="product-card">
+      <img src={product.image} alt={product.name} width="200" />
+      <h3>{product.name}</h3>
+      <p>${product.price}</p>
+      <button onClick={() => addToCart && addToCart(product)}>
+        Add to Cart
+      </button>
+    </div>
   );
-}
+};
 
 export default ProductCard;

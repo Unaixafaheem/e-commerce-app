@@ -1,32 +1,48 @@
 import React from "react";
-import { Box, Container, VStack, useDisclosure } from "@chakra-ui/react";
+import { CartProvider, useCart } from "./context/CartContext";
+import product1 from "./assets/product1.jpg";
+import product2 from "./assets/product2.jpg";
+import product3 from "./assets/product3.jpg";
+
 import Navbar from "./components/Navbar";
 import Products from "./components/Products";
-import Checkout from "./components/Checkout";
-import Footer from "./components/Footer";
-import { CartProvider } from "./context/CartContext";
-import CartDrawer from "./components/CartDrawer";
+import Cart from "./components/Cart";
+import "./index.css";
 
-function App() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+function TheApp() {
+  const { notification, darkMode, isCartOpen } = useCart();
 
   return (
-    <CartProvider>
-      <Box>
-        <Navbar onCartOpen={onOpen} />
+    <div className={`app ${darkMode ? "dark" : "light"}`}>
+      {/* Navbar */}
+      <Navbar />
 
-        <Container maxW="container.lg" py={10}>
-          <VStack spacing={10} align="stretch">
-            <Products />
-            <Checkout />
-          </VStack>
-        </Container>
+      {/* Products Section */}
+      <main>
+        <Products
+          products={[
+            { id: 1, name: "Product 1", price: 100, image: product1 },
+            { id: 2, name: "Product 2", price: 150, image: product2 },
+            { id: 3, name: "Product 3", price: 200, image: product3 },
+          ]}
+        />
+      </main>
 
-        <CartDrawer isOpen={isOpen} onClose={onClose} />
-        <Footer />
-      </Box>
-    </CartProvider>
+      {/* Cart Drawer — opens & closes with toggle */}
+      <div className={`cart-panel ${isCartOpen ? "open" : ""}`}>
+        <Cart />
+      </div>
+
+      {/* Notification bubble */}
+      {notification && <div className="notification">{notification}</div>}
+    </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <CartProvider>
+      <TheApp />
+    </CartProvider>
+  );
+}

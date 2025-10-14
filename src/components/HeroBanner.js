@@ -1,28 +1,35 @@
 import React from "react";
-import { Box, Heading, Text, Button, Stack } from "@chakra-ui/react";
+import { Box, Text, Button, VStack } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 
-export default function HeroBanner() {
+const MotionBox = motion(Box);
+
+function HeroBanner() {
   return (
-    <Box
-      bgGradient="linear(to-r, brand.400, brand.500)"
+    <MotionBox
+      bgImage="url('https://images.unsplash.com/photo-1607082349566-187342b32d94')"
+      bgSize="cover"
+      bgPos="center"
+      h="60vh"
       color="white"
-      p={[6, 10]}
-      borderRadius="lg"
-      mb={6}
-      boxShadow="lg"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5 }}
     >
-      <Stack direction={["column", "row"]} align="center" justify="space-between">
-        <Box>
-          <Heading size="lg">Big Savings — New Arrivals</Heading>
-          <Text mt={2} opacity={0.95}>
-            Discover curated items with fast checkout and secure experience.
-          </Text>
-        </Box>
-
-        <Button colorScheme="blackAlpha" size="lg" mt={[4, 0]}>
-          Shop Bestsellers
+      <VStack spacing={4} textAlign="center" bg="rgba(0,0,0,0.5)" p={6} rounded="lg">
+        <Text fontSize="3xl" fontWeight="bold">
+          Welcome to MyShop
+        </Text>
+        <Text fontSize="lg">Find the best deals and latest trends</Text>
+        <Button colorScheme="teal" size="lg">
+          Shop Now
         </Button>
-      </Stack>
-    </Box>
+      </VStack>
+    </MotionBox>
   );
 }
+
+export default HeroBanner;

@@ -1,25 +1,64 @@
 import React from "react";
-import { Box, Text, VStack } from "@chakra-ui/react";
 import { useCart } from "../context/CartContext";
 
-function Cart() {
-  const { cartItems } = useCart();
+export default function Cart() {
+  const {
+    cartItems,
+    removeFromCart,
+    clearCart,
+    isCartOpen,
+    toggleCart,
+  } = useCart();
+
+  const total = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
   return (
-    <VStack spacing={3} align="stretch">
-      <Text fontWeight="bold" fontSize="xl">Your Cart 🛒</Text>
-      {cartItems.length === 0 ? (
-        <Text>No items in cart</Text>
-      ) : (
-        cartItems.map((item) => (
-          <Box key={item.id} p={3} borderWidth="1px" borderRadius="md">
-            <Text>{item.name}</Text>
-            <Text>${item.price}</Text>
-          </Box>
-        ))
-      )}
-    </VStack>
+    <div className={`cart-panel ${isCartOpen ? "open" : ""}`}>
+      <div className="cart-header">
+        <h3>Your Cart</h3>
+        <button className="close-btn" onClick={toggleCart}>
+          ✕
+        </button>
+      </div>
+
+      <div className="cart-list">
+        {cartItems.length === 0 ? (
+          <p>Your cart is empty 🛍️</p>
+        ) : (
+          cartItems.map((item) => (
+            <div className="cart-item" key={item.id}>
+              <img src={item.image} alt={item.name} />
+              <div className="ci-info">
+                <p>{item.name}</p>
+                <p>${item.price} × {item.quantity}</p>
+              </div>
+              <div className="ci-actions">
+                <button
+                  onClick={() => removeFromCart(item.id)}
+                  className="close-btn"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="cart-footer">
+        <p className="total">Total: ${total.toFixed(2)}</p>
+        <div className="cart-buttons">
+          <button className="checkout-btn" onClick={() => alert("Proceeding to checkout!")}>
+            Checkout
+          </button>
+          <button className="close-btn" onClick={clearCart}>
+            Clear Cart
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
-
-export default Cart;
