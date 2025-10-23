@@ -1,33 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 
+import PaymentModal from "./PaymentModal";
 
+const Checkout = ({ onClose }) => {
+  const { cart, total, clearCart, toggleCart } = useCart();
+  const [openPayment, setOpenPayment] = useState(false);
 
-const Checkout = () => {
-  const { cart, total } = useCart();
+  const handleConfirm = () => {
+    setOpenPayment(true);
+  };
 
-  const handleCheckout = () => {
-    alert("Checkout successful! Total: $" + total);
+  const handlePaid = () => {
+    clearCart();
+    setOpenPayment(false);
+    if (onClose) onClose();
+    toggleCart(); // close cart after order
+    alert("Order placed! Thank you.");
   };
 
   return (
-    <div className="checkout">
+    <div className="checkout-panel">
       <h2>Checkout</h2>
-      {cart.length === 0 ? (
-        <p>No items to checkout</p>
-      ) : (
-        <>
-          <ul>
-            {cart.map((item) => (
-              <li key={item.id}>
-                {item.name} x {item.quantity} = ${item.price * item.quantity}
-              </li>
-            ))}
-          </ul>
-          <h3>Total: ${total}</h3>
-          <button onClick={handleCheckout}>Confirm Checkout</button>
-        </>
-      )}
+      <div className="order-list">
+        {cart.map((it) => (
+          <div key={it.id} className="order-row">
+            <span>{it.name} x {it.quantity}</span>
+            <span>${(it.price * it.quantity).toFixed(2)}</span>
+          </div>
+        ))}
+      </div>
+      <div className="checkout-total">Total: ${total.toFixed(2)}</div>
+      <div className="checkout-actions">
+        <button onClick={handleConfirm} disabled={cart.length===0}>Proceed to Payment</button>
+        <button onClick={onClose}>Back</button>
+      </div>
+
+      <PaymentModal
+        isOpen={openPayment}
+        onClose={() => setOpenPayment(false)}
+        amount={total}
+        onSuccess={handlePaid}
+      />
     </div>
   );
 };

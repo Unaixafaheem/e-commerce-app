@@ -1,7 +1,12 @@
-import { extendTheme } from "@chakra-ui/react";
+// src/theme.js
+export const lightTheme = {
+  background: "#ffffff",
+  text: "#000000",
+  card: "#f4f4f4"
+};
 
-const theme = extendTheme({
-  config: { initialColorMode: "light", useSystemColorMode: false },
-});
-
-export default theme;
+export const darkTheme = {
+  background: "#121212",
+  text: "#ffffff",
+  card: "#1e1e1e"
+};

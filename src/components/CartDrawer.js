@@ -1,134 +1,61 @@
-import React from "react";
-import {
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Box,
-  Text,
-  Button,
-  HStack,
-  VStack,
-  Image,
-  IconButton,
-  useColorModeValue,
-} from "@chakra-ui/react";
-import { motion } from "framer-motion";
+// src/components/CartDrawer.js
+import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
-import { FaTrash } from "react-icons/fa";
 
-const MotionDrawerContent = motion(DrawerContent);
-
-function CartDrawer({ isOpen, onClose }) {
-  const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
-  const drawerBg = useColorModeValue("gray.50", "gray.800");
-  const itemBg = useColorModeValue("white", "gray.700");
-
-  const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+function CartDrawer() {
+  const { cartItems, removeFromCart, total } = useCart();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
-      <DrawerOverlay />
-      <MotionDrawerContent
-        bg={drawerBg}
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 80 }}
+    <>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          position: "fixed",
+          top: "20px",
+          right: "20px",
+          fontSize: "24px",
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+        }}
       >
-        <DrawerCloseButton />
-        <DrawerHeader fontSize="xl" fontWeight="bold">
-          🛒 Your Cart
-        </DrawerHeader>
+        🛒 ({cartItems.length})
+      </button>
 
-        <DrawerBody>
-          {cart.length === 0 ? (
-            <Text color="gray.500" textAlign="center" mt={10}>
-              No items in your cart yet.
-            </Text>
+      {isOpen && (
+        <div
+          style={{
+            position: "fixed",
+            right: 0,
+            top: 0,
+            width: "320px",
+            height: "100vh",
+            background: "#fff",
+            boxShadow: "-2px 0 10px rgba(0,0,0,0.1)",
+            padding: "20px",
+            overflowY: "auto",
+          }}
+        >
+          <h2>Your Cart</h2>
+          {cartItems.length === 0 ? (
+            <p>No items in cart</p>
           ) : (
-            <VStack spacing={4} align="stretch">
-              {cart.map((item) => (
-                <Box
-                  key={item.id}
-                  borderWidth="1px"
-                  borderRadius="lg"
-                  p={3}
-                  bg={itemBg}
-                  shadow="sm"
-                >
-                  <HStack justify="space-between">
-                    <HStack>
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        boxSize="60px"
-                        borderRadius="md"
-                        objectFit="cover"
-                      />
-                      <VStack align="start" spacing={1}>
-                        <Text fontWeight="medium">{item.name}</Text>
-                        <Text fontSize="sm" color="gray.500">
-                          ${item.price}
-                        </Text>
-                      </VStack>
-                    </HStack>
-                    <HStack>
-                      <Button
-                        size="sm"
-                        onClick={() =>
-                          updateQuantity(item.id, Math.max(1, item.quantity - 1))
-                        }
-                      >
-                        -
-                      </Button>
-                      <Text>{item.quantity}</Text>
-                      <Button
-                        size="sm"
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity + 1)
-                        }
-                      >
-                        +
-                      </Button>
-                      <IconButton
-                        size="sm"
-                        colorScheme="red"
-                        icon={<FaTrash />}
-                        onClick={() => removeFromCart(item.id)}
-                        aria-label="Remove"
-                      />
-                    </HStack>
-                  </HStack>
-                </Box>
+            <>
+              {cartItems.map((item) => (
+                <div key={item.id} style={{ marginBottom: "10px" }}>
+                  <p>{item.name}</p>
+                  <p>${item.price}</p>
+                  <button onClick={() => removeFromCart(item.id)}>Remove</button>
+                </div>
               ))}
-            </VStack>
+              <h3>Total: ${total.toFixed(2)}</h3>
+              <button onClick={() => alert("Proceeding to checkout...")}>Checkout</button>
+            </>
           )}
-        </DrawerBody>
-
-        <DrawerFooter flexDir="column" borderTopWidth="1px">
-          <Box w="100%" textAlign="right" mb={3}>
-            <Text fontSize="lg" fontWeight="bold">
-              Total: ${total.toFixed(2)}
-            </Text>
-          </Box>
-          <HStack w="100%" spacing={3}>
-            <Button w="50%" onClick={clearCart} variant="outline" colorScheme="red">
-              Clear Cart
-            </Button>
-            <Button w="50%" colorScheme="teal" onClick={onClose}>
-              Checkout
-            </Button>
-          </HStack>
-        </DrawerFooter>
-      </MotionDrawerContent>
-    </Drawer>
+        </div>
+      )}
+    </>
   );
 }
 
