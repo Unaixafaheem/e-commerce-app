@@ -1,26 +1,53 @@
-import React, { useState } from "react";
+"use client";
+
+import {
+  Box,
+  Image,
+  Text,
+  Heading,
+  Button,
+  Stack,
+} from "@chakra-ui/react";
 import { useCart } from "../context/CartContext";
 
-const ProductCard = ({ product }) => {
+export default function ProductCard({ product }) {
   const { addToCart } = useCart();
-  const [bounced, setBounced] = useState(false);
-
-  const handleAdd = () => {
-    addToCart(product);
-    setBounced(true);
-    setTimeout(() => setBounced(false), 350);
-  };
 
   return (
-    <div className="product-card">
-      <img src={product.image} alt={product.name} className="product-img" />
-      <h3 className="p-name">{product.name}</h3>
-      <p className="p-price">${product.price.toFixed(2)}</p>
-      <button className={`add-btn ${bounced ? "bounced" : ""}`} onClick={handleAdd}>
-        Add to cart
-      </button>
-    </div>
-  );
-};
+    <Box
+      borderWidth="1px"
+      borderRadius="lg"
+      overflow="hidden"
+      bg="white"
+      _hover={{ boxShadow: "md", transform: "translateY(-2px)" }}
+      transition="all 0.15s ease-out"
+    >
+      <Box h="200px" overflow="hidden">
+        <Image
+          src={product.image}
+          alt={product.name}
+          objectFit="cover"
+          w="100%"
+          h="100%"
+        />
+      </Box>
 
-export default ProductCard;
+      <Box p={4}>
+        <Stack spacing={2}>
+          <Heading size="sm">{product.name}</Heading>
+          <Text fontSize="sm" color="gray.600">
+            {product.description}
+          </Text>
+          <Text fontWeight="bold">${product.price.toFixed(2)}</Text>
+          <Button
+            colorScheme="blue"
+            size="sm"
+            onClick={() => addToCart(product)}
+          >
+            Add to cart
+          </Button>
+        </Stack>
+      </Box>
+    </Box>
+  );
+}

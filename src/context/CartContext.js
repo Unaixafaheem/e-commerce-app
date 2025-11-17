@@ -1,75 +1,54 @@
-import React, { createContext, useContext, useState } from "react";
+"use client";
 
-const CartContext = createContext();
+import { createContext, useContext, useState, useMemo } from "react";
+
+const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([]);
-  const [notification, setNotification] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [items, setItems] = useState([]);
 
-  // ✅ Add item to cart
-  const addToCart = (product) => {
-    const existing = cartItems.find((item) => item.id === product.id);
-    if (existing) {
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      setCartItems([...cartItems, { ...product, quantity: 1 }]);
-    }
+  function addToCart(product) {
+    setItems((prev) => {
+      const found = prev.find((p) => p.id === product.id);
+      if (found) {
+        return prev.map((p) =>
+          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+        );
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  }
 
-    setNotification(`${product.name} added to cart!`);
-    setTimeout(() => setNotification(""), 2000);
-  };
+  function removeFromCart(id) {
+    setItems((prev) => prev.filter((p) => p.id !== id));
+  }
 
-  // ✅ Remove a specific item
-  const removeFromCart = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
-  };
+  function clearCart() {
+    setItems([]);
+  }
 
-  // ✅ Clear all items
-  const clearCart = () => {
-    setCartItems([]);
-  };
+  const totalItems = items.reduce((sum, p) => sum + p.quantity, 0);
+  const totalPrice = items.reduce((sum, p) => sum + p.quantity * p.price, 0);
 
-  // ✅ Toggle cart visibility
-  const toggleCart = () => {
-    setIsCartOpen((prev) => !prev);
-  };
-
-  // ✅ Toggle dark mode
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
-  };
-
-  // ✅ Calculate total item count dynamically
-  const itemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-
-  return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        addToCart,
-        removeFromCart,
-        clearCart,
-        notification,
-        darkMode,
-        toggleDarkMode,
-        isCartOpen,
-        toggleCart,
-        itemCount,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
+  const value = useMemo(
+    () => ({
+      items,
+      addToCart,
+      removeFromCart,
+      clearCart,
+      totalItems,
+      totalPrice,
+    }),
+    [items, totalItems, totalPrice]
   );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
-  return useContext(CartContext);
+  const ctx = useContext(CartContext);
+  if (!ctx) {
+    throw new Error("useCart must be used inside CartProvider");
+  }
+  return ctx;
 }
